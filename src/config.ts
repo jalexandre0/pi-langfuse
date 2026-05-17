@@ -25,10 +25,6 @@ export interface Config {
 	redactionAdditionalSecrets: string[];
 	rawTraceEnabled: boolean;
 	rawTraceDir: string;
-	localAutostart: boolean;
-	localAutostartDir: string;
-	localAutostartHealthUrl: string;
-	localAutostartTimeoutMs: number;
 }
 
 function readConfigJson(path: string): Partial<Config> {
@@ -43,7 +39,7 @@ function readConfigJson(path: string): Partial<Config> {
 }
 
 function loadConfigFile(): Partial<Config> {
-	return readConfigJson(join(defaultLocalAutostartDir(), "pi-langfuse.json"));
+	return readConfigJson(join(defaultAgentDir(), "pi-langfuse.json"));
 }
 
 function clampNumber(
@@ -67,10 +63,6 @@ function defaultAgentDir() {
 		process.env.PI_CODING_AGENT_DIR ||
 		join(process.env.HOME || "", ".pi", "agent")
 	);
-}
-
-function defaultLocalAutostartDir() {
-	return join(defaultAgentDir(), "langfuse");
 }
 
 function parseList(value: unknown, maxItems: number): string[] {
@@ -108,13 +100,7 @@ export function resolveConfig(settings: Partial<SettingsValues>): Config {
 		process.env.LANGFUSE_BASE_URL ||
 		process.env.LANGFUSE_HOST ||
 		DEFAULT_SETTINGS["base-url"];
-	const envAutostart = process.env.PI_LANGFUSE_AUTOSTART;
-	const localAutostart =
-		envAutostart === "0"
-			? false
-			: envAutostart === "1"
-				? true
-				: ((fileConfig.localAutostart as boolean | undefined) ?? false);
+
 	const envRedaction =
 		process.env.PI_LANGFUSE_UNREDACTED === "1"
 			? false
@@ -231,24 +217,6 @@ export function resolveConfig(settings: Partial<SettingsValues>): Config {
 				fileConfig.rawTraceDir ||
 				process.env.PI_LANGFUSE_RAW_TRACE_DIR ||
 				defaultRawTraceDir(),
-		),
-		localAutostart,
-		localAutostartDir: String(
-			fileConfig.localAutostartDir ??
-				process.env.PI_LANGFUSE_AUTOSTART_DIR ??
-				defaultLocalAutostartDir(),
-		),
-		localAutostartHealthUrl: String(
-			fileConfig.localAutostartHealthUrl ??
-				process.env.PI_LANGFUSE_AUTOSTART_HEALTH_URL ??
-				`${host.replace(/\/$/, "")}/api/public/health`,
-		),
-		localAutostartTimeoutMs: clampNumber(
-			fileConfig.localAutostartTimeoutMs ??
-				process.env.PI_LANGFUSE_AUTOSTART_TIMEOUT_MS,
-			200,
-			50,
-			5_000,
 		),
 	};
 }

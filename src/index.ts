@@ -15,8 +15,6 @@ import {
 	type LangfuseTrace,
 	shutdownClient,
 } from "./langfuse-client.js";
-import { ensureLocalLangfuseStarted } from "./local-autostart.js";
-import { runLangfuseInit } from "./local-init.js";
 import { appendRawTrace } from "./raw-trace.js";
 import { redactionMetadata, redactString } from "./redaction.js";
 import {
@@ -534,12 +532,6 @@ export default async function (pi: ExtensionAPI) {
 		void refreshConfig();
 	});
 
-	pi.registerCommand("langfuse-init", {
-		description:
-			"Initialize a local self-hosted Langfuse stack for Pi without overwriting existing files",
-		handler: runLangfuseInit,
-	});
-
 	pi.registerCommand("langfuse:export", {
 		description:
 			"Create a local redacted export of Pi sessions and pi-langfuse raw traces without uploading anywhere",
@@ -674,7 +666,6 @@ export default async function (pi: ExtensionAPI) {
 		try {
 			if (!canTrace(config)) return;
 
-			await ensureLocalLangfuseStarted(config);
 			const lf = await getClient(config);
 			const trace = lf.trace({
 				name: "pi-agent",
