@@ -1,0 +1,24 @@
+# Gitleaks Ignore File (Regex format)
+# Ignore test files
+.*\.test\.ts$
+.*\.test\.js$
+
+# Ignore example files
+.*\.example$
+
+# Ignore build artifacts
+^dist/
+^node_modules/
+
+# Ignore validation scripts
+^bug-fix/validate_session\.py$
+^bug-fix/validate_trace\.py$
+^bug-fix/check-cast\.js$
+^bug-fix/check-logs\.js$
+^bug-fix/send-prompts.*\.sh$
+
+# Ignore bug-fix directory
+^bug-fix/
+
+# Ignore specific file with known false positives
+^src/redaction\.test\.ts$
