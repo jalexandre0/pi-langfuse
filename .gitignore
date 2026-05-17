@@ -17,3 +17,4 @@ bug-fix/*.py
 !bug-fix/validate-traces.js
 !bug-fix/validate_session.py
 .env.test
+.env.test
