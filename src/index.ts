@@ -24,6 +24,7 @@ import {
 	type SettingsValues,
 	setSettingsValues,
 } from "./settings.js";
+import { logLangfuseError } from "./error-log.js";
 
 interface PiUsage {
 	input?: number;
@@ -698,6 +699,7 @@ export default async function (pi: ExtensionAPI) {
 			promptState.trace = trace;
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to create trace", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -725,6 +727,7 @@ export default async function (pi: ExtensionAPI) {
 			});
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to create prompt span", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -754,6 +757,7 @@ export default async function (pi: ExtensionAPI) {
 			});
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to create turn span", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -840,6 +844,7 @@ export default async function (pi: ExtensionAPI) {
 			});
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to create tool span", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -958,6 +963,7 @@ export default async function (pi: ExtensionAPI) {
 			});
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to start generation", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -1101,6 +1107,7 @@ export default async function (pi: ExtensionAPI) {
 			}
 		} catch (e) {
 			console.warn("📊 Langfuse: Failed to end generation", e);
+			logLangfuseError(resolveConfig(settings), e, { traceId: promptState?.trace?.id });
 		}
 	});
 
@@ -1186,8 +1193,17 @@ export default async function (pi: ExtensionAPI) {
 						: undefined,
 				},
 			});
-		} catch (_e) {
-			// ignore
+		} catch (e) {
+			// Fail-Close Mitigation: Log error to disk and console
+			console.error(
+				"Langfuse: Failed to capture provider request.",
+				e instanceof Error ? e.message : String(e),
+			);
+			logLangfuseError(resolveConfig(settings), e, {
+				traceId: promptState?.trace?.id,
+				turnIndex: turnState?.index,
+				payload: event.payload,
+			});
 		}
 	});
 
