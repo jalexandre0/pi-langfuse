@@ -33,10 +33,6 @@ const baseConfig: Config = {
 	redactionAdditionalSecrets: ["custom-super-secret-987654321"],
 	rawTraceEnabled: false,
 	rawTraceDir: "/tmp/raw",
-	localAutostart: false,
-	localAutostartDir: "/tmp/langfuse",
-	localAutostartHealthUrl: "http://localhost:3100/api/public/health",
-	localAutostartTimeoutMs: 200,
 };
 
 describe("redacted export", () => {
