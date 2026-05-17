@@ -6,8 +6,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const ERROR_LOG_DIR = path.join(os.homedir(), '.pi', 'agent', 'sessions');
-const ERROR_LOG_FILE = path.join(ERROR_LOG_DIR, 'langfuse-errors.jsonl');
+const DEFAULT_ERROR_LOG_DIR = path.join(os.homedir(), '.pi', 'agent', 'sessions');
+const ERROR_LOG_FILE_NAME = 'langfuse-errors.jsonl';
 const MAX_LOG_LINES = 1000; // Keep last 1000 errors
 
 interface LangfuseErrorRecord {
@@ -21,11 +21,15 @@ interface LangfuseErrorRecord {
 export function logLangfuseError(
     config: { host: string }, 
     error: unknown, 
-    context: { traceId?: string; turnIndex?: number; payload?: unknown }
+    context: { traceId?: string; turnIndex?: number; payload?: unknown },
+    logDir?: string // Optional: for testing
 ) {
     try {
-        if (!fs.existsSync(ERROR_LOG_DIR)) {
-            fs.mkdirSync(ERROR_LOG_DIR, { recursive: true });
+        const targetDir = logDir || DEFAULT_ERROR_LOG_DIR;
+        const logFile = path.join(targetDir, ERROR_LOG_FILE_NAME);
+
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
         }
 
         const record: LangfuseErrorRecord = {
@@ -37,13 +41,13 @@ export function logLangfuseError(
         };
 
         // Append to JSONL
-        fs.appendFileSync(ERROR_LOG_FILE, JSON.stringify(record) + '\n');
+        fs.appendFileSync(logFile, JSON.stringify(record) + '\n');
 
         // Simple rotation: keep last MAX_LOG_LINES
-        const lines = fs.readFileSync(ERROR_LOG_FILE, 'utf-8').split('\n').filter(Boolean);
+        const lines = fs.readFileSync(logFile, 'utf-8').split('\n').filter(Boolean);
         if (lines.length > MAX_LOG_LINES) {
             const trimmed = lines.slice(-MAX_LOG_LINES).join('\n') + '\n';
-            fs.writeFileSync(ERROR_LOG_FILE, trimmed);
+            fs.writeFileSync(logFile, trimmed);
         }
 
     } catch (e) {
