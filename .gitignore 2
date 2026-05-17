@@ -1,0 +1,9 @@
+node_modules/
+bun.lock
+*.log
+.DS_Store
+config.json
+/.pi-lens
+dist/
+.npmrc
+.pi/

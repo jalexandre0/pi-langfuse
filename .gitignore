@@ -1,9 +1,18 @@
+# Existing entries (approximated)
 node_modules/
-bun.lock
-*.log
-.DS_Store
-config.json
-/.pi-lens
 dist/
-.npmrc
-.pi/
+*.log
+.env
+auth.json
+sessions/
+
+# Validation results (temporary)
+bug-fix/validation-results/
+bug-fix/*.js
+bug-fix/*.py
+!bug-fix/*.md
+!bug-fix/send-prompts*.sh
+!bug-fix/check-cast.js
+!bug-fix/check-logs.js
+!bug-fix/validate-traces.js
+!bug-fix/validate_session.py
