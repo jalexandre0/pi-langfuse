@@ -1,0 +1,13 @@
+# .gitleaks.toml
+title = "pi-langfuse gitleaks config"
+
+[whitelist]
+description = "Whitelisted files or paths"
+files = [
+    ".*\\.example$",
+    ".*\\.test\\.ts$",
+    ".*\\.test\\.js$",
+    "^bug-fix/",
+    "^\\.env\\.test$",
+    "^src/redaction\\.test\\.ts$"
+]
