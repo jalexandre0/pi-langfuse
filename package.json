@@ -44,7 +44,7 @@
 	],
 	"pi": {
 		"extensions": [
-			"./dist/index.js"
+			"./dist/index.js#pi-langfuse"
 		],
 		"image": "https://raw.githubusercontent.com/edxeth/pi-langfuse/main/docs/screenshot.jpg"
 	},
