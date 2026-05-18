@@ -508,7 +508,7 @@ async function finalizePrompt(config: Config | undefined, flush = false) {
 	promptState = null;
 }
 
-export default async function (pi: ExtensionAPI) {
+const extensionSetup = async function (pi: ExtensionAPI) {
 	let settings = getStoredSettingsValues(pi);
 	let lastUiContext: LangfuseUiContext | undefined;
 
@@ -1252,3 +1252,5 @@ export default async function (pi: ExtensionAPI) {
 		await shutdownClient();
 	});
 }
+extensionSetup.name = "pi-langfuse";
+export default extensionSetup;
